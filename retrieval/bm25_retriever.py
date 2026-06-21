@@ -1,8 +1,14 @@
+import re
+
 from rank_bm25 import BM25Okapi
 
 
 bm25_index = None
 chunk_store = []
+
+
+def tokenize(text):
+    return re.findall(r"\b\w+\b", text.lower())
 
 
 def build_bm25_index(chunks):
@@ -15,7 +21,7 @@ def build_bm25_index(chunks):
         return
 
     tokenized_chunks = [
-        chunk["text"].lower().split()
+        tokenize(chunk["text"])
         for chunk in chunks
     ]
 
@@ -28,7 +34,7 @@ def bm25_search(query, top_k=5):
     if bm25_index is None:
         return []
 
-    tokenized_query = query.lower().split()
+    tokenized_query = tokenize(query)
 
     scores = bm25_index.get_scores(tokenized_query)
 
