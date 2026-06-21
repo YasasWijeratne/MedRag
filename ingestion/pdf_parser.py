@@ -47,11 +47,16 @@ def extract_pdf_text(uploaded_file):
         for page_number in range(len(document)):
             page = document.load_page(page_number)
 
+            page_text = page.get_text()
+
+            if not page_text.strip():
+                continue
+
             pages.append(
                 {
                     "source": source_name,
                     "page": page_number + 1,
-                    "text": page.get_text()
+                    "text": page_text
                 }
             )
 
