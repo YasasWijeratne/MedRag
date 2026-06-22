@@ -6,7 +6,7 @@ from retrieval.vector_store import similarity_search
 RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 reranker = CrossEncoder(RERANKER_MODEL)
-
+CONTRADICTION_THRESHOLD = 0.3
 
 def merge_results(vector_results, bm25_results):
     merged = {}
@@ -63,31 +63,50 @@ def calculate_confidence(results):
     return round(confidence * 100, 2)
 
 
-def detect_contradictions(results, threshold=0.95):
+def detect_contradictions(results):
+    if len(results) < 2:
+        return []
+
     contradictions = []
 
-    for i in range(len(results)):
-        for j in range(i + 1, len(results)):
-            score_difference = abs(
-                results[i]["rerank_score"]
-                - results[j]["rerank_score"]
-            )
+    try:
+        for i in range(len(results)):
+            for j in range(i + 1, len(results)):
+                if results[i]["source"] == results[j]["source"]:
+                    continue
 
-            if score_difference < (1 - threshold):
-                if results[i]["source"] != results[j]["source"]:
+                similarity_score = float(
+                    reranker.predict(
+                        [
+                            (
+                                results[i]["text"],
+                                results[j]["text"]
+                            )
+                        ]
+                    )[0]
+                )
+
+                if similarity_score < CONTRADICTION_THRESHOLD:
                     contradictions.append(
                         {
                             "source_a": results[i]["source"],
                             "source_b": results[j]["source"],
                             "page_a": results[i]["page"],
-                            "page_b": results[j]["page"]
+                            "page_b": results[j]["page"],
+                            "similarity_score": similarity_score
                         }
                     )
+
+    except Exception as error:
+        print(
+            f"Contradiction detection error: {error}"
+        )
+        return []
 
     return contradictions
 
 
-def retrieve(query, query_embedding, top_k=5):
+def retrieve(query, query_embedding, top_k=3):
     vector_results = similarity_search(
         query_embedding,
         top_k=10
