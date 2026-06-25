@@ -76,3 +76,28 @@ def similarity_search(query_embedding, top_k=5):
 
 def get_document_count():
     return collection.count()
+
+def get_all_chunks():
+    results = collection.get(
+        include=["documents", "metadatas"]
+    )
+
+    chunks = []
+
+    documents = results["documents"]
+    metadatas = results["metadatas"]
+
+    for document, metadata in zip(
+        documents,
+        metadatas
+    ):
+        chunks.append(
+            {
+                "text": document,
+                "source": metadata["source"],
+                "page": metadata["page"],
+                "chunk_id": metadata["chunk_id"]
+            }
+        )
+
+    return chunks
