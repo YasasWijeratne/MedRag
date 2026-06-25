@@ -99,7 +99,7 @@ def detect_contradictions(results):
 
     except Exception as error:
         print(
-            f"Contradiction detection error: {error}"
+            f"Contradiction detection error"
         )
         return []
 
