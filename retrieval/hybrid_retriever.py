@@ -1,7 +1,7 @@
 from sentence_transformers import CrossEncoder
 
 from retrieval.bm25_retriever import bm25_search
-from retrieval.vector_store import similarity_search
+from retrieval.vectore_store import similarity_search
 
 RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
