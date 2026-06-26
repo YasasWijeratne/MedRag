@@ -4,7 +4,7 @@ from ingestion.pdf_parser import extract_pdf_text
 from ingestion.chunker import chunk_pages
 from ingestion.embedder import embed_documents, embed_query
 
-from retrieval.vector_store import (
+from retrieval.vectore_store import (
     add_chunks,
     get_document_count,
     get_all_chunks
