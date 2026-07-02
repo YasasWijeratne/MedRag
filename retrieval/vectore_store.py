@@ -77,6 +77,9 @@ def similarity_search(query_embedding, top_k=5):
 def get_document_count():
     return collection.count()
 
+def clear_all_chunks():
+    collection.delete(where={"source": {"$ne": ""}})
+
 def get_all_chunks():
     results = collection.get(
         include=["documents", "metadatas"]
