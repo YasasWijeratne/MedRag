@@ -29,6 +29,12 @@ def build_bm25_index(chunks):
 
     chunk_store = chunks
 
+def clear_bm25_index():
+    global bm25_index
+    global chunk_store
+    bm25_index = None
+    chunk_store = []
+
 
 def bm25_search(query, top_k=5):
     if bm25_index is None:
